@@ -1,0 +1,62 @@
+.date-format-container {
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  max-width: 640px;
+  padding: 20px;
+  border: 1px solid #d9dce3;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 2px 2px 0 #dcdcde;
+}
+
+.date-format-container label {
+  color: #171717;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown::after {
+  content: "⌄";
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  color: black;
+  font-size: 22px;
+  font-weight: 700;
+  pointer-events: none;
+  transform: translateY(-58%);
+}
+
+.dropdown select {
+  width: 100%;
+  appearance: none;
+  padding: 12px 42px 12px 14px;
+  border: 1px solid #d9dce3;
+  border-radius: 9px;
+  outline: none;
+  /* background: #fffbed; */
+  color: #171717;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dropdown select:hover {
+  /* background: #fff4b0; */
+}
+
+.dropdown select:focus {
+  border-color: #171717;
+  box-shadow: 0 0 0 3px #c9d2ff;
+}
+
+.date-format-container p {
+  margin: 4px 0 0;
+  color: #4b5563;
+  font-size: 13px;
+}

@@ -1,0 +1,81 @@
+.toggle {
+  /* Tweak these to restyle the whole component */
+  --toggle-width: 2.75rem;
+  --toggle-height: 1.5rem;
+  --toggle-gap: 3px;
+  --toggle-off: #c4c9d1;
+  --toggle-on: #4da0e9;
+  --toggle-thumb: #ffffff;
+  --toggle-focus: #2b6cb0;
+  --toggle-speed: 180ms;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  user-select: none;
+  font: inherit;
+}
+
+/* Hide the checkbox visually but keep it focusable and readable */
+.toggle__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.toggle__track {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--toggle-width);
+  height: var(--toggle-height);
+  border-radius: 999px;
+  background: var(--toggle-off);
+  transition: background-color var(--toggle-speed) ease;
+}
+
+.toggle__thumb {
+  position: absolute;
+  top: var(--toggle-gap);
+  left: var(--toggle-gap);
+  width: calc(var(--toggle-height) - var(--toggle-gap) * 2);
+  height: calc(var(--toggle-height) - var(--toggle-gap) * 2);
+  border-radius: 50%;
+  background: var(--toggle-thumb);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  transition: transform var(--toggle-speed) ease;
+}
+
+/* ON state: the sibling selector reacts to the hidden checkbox */
+.toggle__input:checked + .toggle__track {
+  background: var(--toggle-on);
+}
+
+.toggle__input:checked + .toggle__track .toggle__thumb {
+  transform: translateX(calc(var(--toggle-width) - var(--toggle-height)));
+}
+
+/* Keyboard focus ring (not shown on mouse click) */
+.toggle__input:focus-visible + .toggle__track {
+  outline: 2px solid var(--toggle-focus);
+  outline-offset: 2px;
+}
+
+/* Disabled */
+.toggle:has(.toggle__input:disabled) {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  .toggle__track,
+  .toggle__thumb {
+    transition: none;
+  }
+}

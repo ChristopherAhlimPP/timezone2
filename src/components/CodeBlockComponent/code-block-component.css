@@ -1,0 +1,65 @@
+/*============= CODE BLOCK =============*/
+
+.code-block {
+  position: relative;
+  min-height: 240px;
+  margin-top: 4px;
+  padding: 48px 20px 18px 20px;
+  overflow-x: auto;
+
+  border-radius: 12px;
+  background: #1e1e2e;
+  color: #cdd6f4;
+
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.code-block code {
+  font: inherit;
+}
+
+.icon-container {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 8%);
+  color: #bac2de;
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.icon-container:hover {
+  background: #45475a;
+  color: #f5e0dc;
+  transform: translateY(-1px);
+}
+
+.icon-container:active {
+  transform: translateY(0);
+}
+
+.icon-container:focus-visible {
+  outline: 2px solid #89b4fa;
+  outline-offset: 2px;
+}
+
+.codeblock-icon {
+  font-size: 18px;
+}
