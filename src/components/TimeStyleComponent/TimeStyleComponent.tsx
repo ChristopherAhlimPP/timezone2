@@ -4,7 +4,7 @@ import "./time-style-component.css";
 export type TimeStyle = {
   format: "12hr" | "24hr";
   hour: "h-standard" | "h-pad-start";
-  minute: "m-standard" | "m-pad-start" | "m-na";
+  minute: "m-standard" | "m-pad-start";
   ampm: "upp" | "low" | "na";
   position: "front" | "back";
   includeComma: "yes" | "no";
@@ -31,10 +31,6 @@ const timeStyles = {
   minute: [
     { value: "m-standard", label: "5" },
     { value: "m-pad-start", label: "05" },
-    {
-      value: "m-na",
-      label: "NA (Eg: 3 AM)",
-    },
   ],
   ampm: [
     { value: "upp", label: "AM" },
@@ -206,6 +202,10 @@ const TimeStyleComponent = ({
           ))}
         </div>
       </fieldset>
+
+      <div style={{ color: "lightgrey", fontStyle: "italic" }}>
+        No preview yet.
+      </div>
     </div>
   );
 };

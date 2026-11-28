@@ -1,5 +1,6 @@
 import React from "react";
 import "./date-style-component.css";
+import type { Item, ItemDetail } from "../../types/item-types";
 
 export type DateStyle = {
   date: "date-standard" | "date-pad-start";
@@ -13,11 +14,22 @@ export type DateStyle = {
     | "month-low-long"
     | "month-low-short";
   year: "full-year" | "partial-year";
+  day:
+    | "day-cap-long"
+    | "day-cap-short"
+    | "day-upp-long"
+    | "day-upp-short"
+    | "day-low-long"
+    | "day-low-short";
 };
 
+type DateKey = keyof typeof dateTypes;
+
 type DateStyleComponentProps = {
+  selectedItems: ItemDetail;
   dateStyles: DateStyle;
   onChangeStyle: React.Dispatch<React.SetStateAction<DateStyle>>;
+  onChangeFormat: React.Dispatch<React.SetStateAction<ItemDetail>>;
 };
 
 const dateTypes = {
@@ -39,19 +51,72 @@ const dateTypes = {
     { value: "full-year", label: "2026" },
     { value: "partial-year", label: "26" },
   ],
+  day: [
+    { value: "day-cap-long", label: "Sunday" },
+    { value: "day-cap-short", label: "Sun" },
+    { value: "day-upp-long", label: "SUNDAY" },
+    { value: "day-upp-short", label: "SUMN" },
+    { value: "day-low-long", label: "sunday" },
+    { value: "day-low-short", label: "sun" },
+  ],
 };
 
 const DateStyleComponent = ({
+  selectedItems,
   dateStyles,
   onChangeStyle,
+  onChangeFormat,
 }: DateStyleComponentProps) => {
+  const filteredItems = Object.values(selectedItems).filter(
+    (item): item is Item & { name: DateKey } =>
+      item.selected && item.name in dateTypes,
+  );
   return (
     <div className="date-style">
       <div className="date-style__groups">
-        <p className="date-style__note">
-          *Options are based on the date: 1 Feb 2026
-        </p>
-        <fieldset className="date-style__group">
+        <small className="date-style__note">
+          *Options are based on the date: 1 Feb 2026, Sunday
+        </small>
+        {filteredItems &&
+          filteredItems.length > 0 &&
+          filteredItems.map((item, index) => (
+            <fieldset key={index} className="date-style__group">
+              <legend className="date-style__legend">
+                Choose a {item.name} style
+              </legend>
+              <div className="date-style__options">
+                {dateTypes[item.name].map((dt, idx) => (
+                  <label key={idx} className="date-style__option">
+                    <input
+                      type="radio"
+                      name={`date-style-${item.name}`}
+                      value={dt.value}
+                      checked={item.format === dt.value}
+                      onChange={(e) =>
+                        // onChangeStyle(
+                        //   (prev: DateStyle) =>
+                        //     ({
+                        //       ...prev,
+                        //       [item.name]: e.target.value,
+                        //     }) as DateStyle,
+                        // )
+                        onChangeFormat((prev: ItemDetail) => ({
+                          ...prev,
+                          [item.name]: {
+                            ...prev[item.name],
+                            format: e.target.value,
+                          },
+                        }))
+                      }
+                    />
+                    {dt.label}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          ))}
+
+        {/* <fieldset className="date-style__group">
           <legend className="date-style__legend">Choose a date style</legend>
           <div className="date-style__options">
             {dateTypes.date.map((dt, idx) => (
@@ -116,7 +181,7 @@ const DateStyleComponent = ({
               </label>
             ))}
           </div>
-        </fieldset>
+        </fieldset> */}
       </div>
     </div>
   );

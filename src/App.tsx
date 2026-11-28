@@ -8,113 +8,148 @@ import DateStyleComponent, {
   type DateStyle,
 } from "./components/DateStyleComponent/DateStyleComponent";
 import Toggle from "./components/ToggleComponent/Toggle";
-import { BiUnderline } from "react-icons/bi";
 import TimeStyleComponent, {
   DEFAULT_TIMESTYLE,
   type TimeStyle,
 } from "./components/TimeStyleComponent/TimeStyleComponent";
-import { getDateStyles, getTimeStyles } from "./utils/datetime-styles";
+import {
+  addDateTimeInfo,
+  getDateStyles,
+  getTimeStyles,
+} from "./utils/datetime-styles";
+import {
+  browserTimeZone,
+  DEFAULT_ITEM,
+  type ItemDetail,
+  type OutputItem,
+} from "./types/item-types";
+import SelectItemComponent from "./components/SelectItemComponent/SelectItemComponent";
+import ArrangeItems from "./components/ArrangeItems/ArrangeItems";
 
 type DateValue = Date;
 
 // check out this later.
 Intl;
 
+const defaultPreviewHtml = `<div style="color: lightgrey; font-style: italic;" >No preview yet.</div>`;
+
 function App() {
   const [dateType, setDateType] = useState<"single" | "range">("single");
-  const [includeTime, setIncludeTime] = useState<boolean>(false);
   const [singleDateTime, setSingleDateTime] = useState<DateValue>(new Date());
   const [startDateTime, setStartDateTime] = useState<Date | null>(new Date());
   const [endDateTime, setEndDateTime] = useState<Date | null>();
-  const [codeString, setCodeString] = useState<string>("<div>11/11/2026</div>");
+  const [codeString, setCodeString] = useState<string>("");
 
   const [selectedFormat, setSelectedFormat] = useState<string>("DD/MM/YYYY");
   const [selectedSeparator, setSelectedSeparator] = useState<string>("/");
 
+  // todo: might consider to use the selectedItems data instead
   const [dateStyle, setDateStyle] = useState<DateStyle>({
     date: "date-standard",
     month: "month-standard",
     year: "full-year",
+    day: "day-cap-long",
   });
 
   const [timeStyle, setTimeStyle] = useState<TimeStyle>(DEFAULT_TIMESTYLE);
 
-  function singleDateFormat(
-    format: string,
-    seperator: string,
-    selectedDate: Date,
-    style: DateStyle,
-    includeTime: boolean,
-    timeStyle: TimeStyle,
-  ) {
-    let year = getDateStyles(selectedDate, style, "year");
-    let month = getDateStyles(selectedDate, style, "month");
-    let date = getDateStyles(selectedDate, style, "date");
-
-    let arrangement = [];
-    switch (format) {
-      case "DD/MM/YYYY":
-        arrangement = [date, month, year];
-        break;
-      case "DD/YYYY/MM":
-        arrangement = [date, year, month];
-        break;
-
-      case "MM/DD/YYYY":
-        arrangement = [month, date, year];
-        break;
-      case "MM/YYYY/DD":
-        arrangement = [month, year, date];
-        break;
-
-      case "YYYY/MM/DD":
-        arrangement = [year, month, date];
-        break;
-      case "YYYY/DD/MM":
-        arrangement = [year, date, month];
-        break;
-
-      default:
-        arrangement = [date, month, year];
-    }
-
-    let cleanedSeperator = seperator;
-    if (cleanedSeperator === "(space)") cleanedSeperator = " ";
-
-    let finalDateString =
-      arrangement[0] +
-      cleanedSeperator +
-      arrangement[1] +
-      cleanedSeperator +
-      arrangement[2];
-
-    if (!includeTime) return finalDateString;
-
-    let finalTimeString = getTimeStyles(selectedDate, timeStyle);
-    let includeComma = timeStyle.includeComma === "yes" ? "," : "";
-
-    if (includeTime && timeStyle.position === "front") {
-      return `${finalTimeString}${includeComma}  ${finalDateString}`;
-    }
-    if (includeTime && timeStyle.position === "back") {
-      return `${finalDateString}${includeComma}  ${finalTimeString}`;
-    }
-
-    return finalDateString;
-  }
+  const [selectedItems, setSelectedItems] = useState<ItemDetail>(DEFAULT_ITEM);
+  const [arrangedItems, setArrangedItems] = useState<OutputItem[]>([]);
 
   useEffect(() => {
-    let string = `<div>${singleDateFormat(selectedFormat, selectedSeparator, singleDateTime, dateStyle, includeTime, timeStyle)}</div>`;
+    let html = "";
+    let newArrItem: OutputItem[] = addDateTimeInfo(
+      singleDateTime,
+      arrangedItems,
+    );
 
-    setCodeString(string);
-  }, [
-    singleDateTime,
-    selectedFormat,
-    selectedSeparator,
-    dateStyle,
-    includeTime,
-    timeStyle,
-  ]);
+    if (newArrItem.length > 0) {
+      for (const item of newArrItem) {
+        html += `<span>${item.value}</span>`;
+      }
+
+      html = `<div>${html}</div>`;
+    }
+
+    setCodeString(html);
+  }, [singleDateTime, arrangedItems]);
+
+  // function singleDateFormat(
+  //   format: string,
+  //   seperator: string,
+  //   selectedDate: Date,
+  //   selectedItems: ItemDetail,
+  //   style: DateStyle,
+  //   timeStyle: TimeStyle,
+  // ) {
+  //   let year = getDateStyles(selectedDate, style, "year");
+  //   let month = getDateStyles(selectedDate, style, "month");
+  //   let date = getDateStyles(selectedDate, style, "date");
+
+  //   let arrangement = [];
+  //   switch (format) {
+  //     case "DD/MM/YYYY":
+  //       arrangement = [date, month, year];
+  //       break;
+  //     case "DD/YYYY/MM":
+  //       arrangement = [date, year, month];
+  //       break;
+
+  //     case "MM/DD/YYYY":
+  //       arrangement = [month, date, year];
+  //       break;
+  //     case "MM/YYYY/DD":
+  //       arrangement = [month, year, date];
+  //       break;
+
+  //     case "YYYY/MM/DD":
+  //       arrangement = [year, month, date];
+  //       break;
+  //     case "YYYY/DD/MM":
+  //       arrangement = [year, date, month];
+  //       break;
+
+  //     default:
+  //       arrangement = [date, month, year];
+  //   }
+
+  //   let cleanedSeperator = seperator;
+  //   if (cleanedSeperator === "(space)") cleanedSeperator = " ";
+
+  //   let finalDateString =
+  //     arrangement[0] +
+  //     cleanedSeperator +
+  //     arrangement[1] +
+  //     cleanedSeperator +
+  //     arrangement[2];
+
+  //   if (!includeTime) return finalDateString;
+
+  //   let finalTimeString = getTimeStyles(selectedDate, timeStyle);
+  //   let includeComma = timeStyle.includeComma === "yes" ? "," : "";
+
+  //   if (includeTime && timeStyle.position === "front") {
+  //     return `${finalTimeString}${includeComma}  ${finalDateString}`;
+  //   }
+  //   if (includeTime && timeStyle.position === "back") {
+  //     return `${finalDateString}${includeComma}  ${finalTimeString}`;
+  //   }
+
+  //   return finalDateString;
+  // }
+
+  // useEffect(() => {
+  //   let string = `<div>${singleDateFormat(selectedFormat, selectedSeparator, singleDateTime, dateStyle, includeTime, timeStyle)}</div>`;
+
+  //   setCodeString(string);
+  // }, [
+  //   singleDateTime,
+  //   selectedFormat,
+  //   selectedSeparator,
+  //   dateStyle,
+  //   includeTime,
+  //   timeStyle,
+  // ]);
 
   return (
     <div className="page">
@@ -138,24 +173,30 @@ function App() {
             </button>
           </div>
           <div className="tab-content">
-            <div className="top-left">
+            <SelectItemComponent
+              selectedItems={selectedItems}
+              onSelectedItemChange={setSelectedItems}
+            />
+            {/* <div className="top-left">
               <Toggle
                 checked={includeTime}
                 label="Include time"
                 onChange={setIncludeTime}
               />
-            </div>
+            </div> */}
             <div className="select-date-part">
               {/* create a toggle here that link to  */}
 
-              {dateType === "single" && (
+              {/* {dateType === "single" && (
                 <div className="datepicker-container">
                   <DatePicker
                     id="single-date"
                     selected={singleDateTime}
                     onChange={(value: any) => setSingleDateTime(value)}
                     dateFormat={
-                      includeTime ? "dd MMMM yyyy, h:mm aa" : "dd MMMM yyyy"
+                      selectedItems.hour.include
+                        ? "dd MMMM yyyy, h:mm aa"
+                        : "dd MMMM yyyy"
                     }
                     showMonthDropdown
                     showYearDropdown
@@ -166,11 +207,43 @@ function App() {
                     wrapperClassName="date-picker"
                   />
                 </div>
+              )} */}
+              {dateType === "single" && (
+                <div className="datepicker-container">
+                  <DatePicker
+                    id="single-date"
+                    selected={singleDateTime}
+                    onChange={(value: any) => setSingleDateTime(value)}
+                    dateFormat={
+                      selectedItems.hour.selected
+                        ? selectedItems.minute.selected
+                          ? "dd MMMM yyyy, h:mm aa"
+                          : "dd MMMM yyyy, h aa"
+                        : "dd MMMM yyyy"
+                    }
+                    showMonthDropdown
+                    showYearDropdown
+                    showTimeSelect={
+                      selectedItems.hour.selected &&
+                      !selectedItems.minute.selected
+                    }
+                    showTimeInput={selectedItems.minute.selected}
+                    timeIntervals={60}
+                    placeholderText="Select a date"
+                    className="date-input"
+                    calendarClassName="date-calendar"
+                    wrapperClassName="date-picker"
+                  />
+                  <small className="small_note">
+                    Note: Your selected date time here are based of your browser
+                    timezone: <strong>{browserTimeZone}</strong>
+                  </small>
+                </div>
               )}
               {dateType === "range" && (
                 <div className="datepicker-container">
                   {/* <label htmlFor="">Start time</label> */}
-                  <DatePicker
+                  {/* <DatePicker
                     startDate={startDateTime}
                     endDate={endDateTime}
                     dateFormat={
@@ -189,7 +262,7 @@ function App() {
                     className="date-input"
                     calendarClassName="date-calendar"
                     wrapperClassName="date-picker"
-                  />
+                  /> */}
                   {/* {" - "}
                   <DatePicker
                     selected={endDate}
@@ -213,21 +286,31 @@ function App() {
               )}
             </div>
 
+            {/* ---------- Arrange Style ------------ */}
+
+            <ArrangeItems
+              selectedItems={selectedItems}
+              arrangedItems={arrangedItems}
+              onChange={setArrangedItems}
+            />
+
             {/* ---------- Select Date Format ------------ */}
-            <DateFormatComponent
+            {/* <DateFormatComponent
               format={selectedFormat}
               onFormatChange={setSelectedFormat}
               seperator={selectedSeparator}
               onSeperatorChange={setSelectedSeparator}
-            />
+            /> */}
             {/* -------------- Select Date Style -------------- */}
             <DateStyleComponent
+              selectedItems={selectedItems}
               dateStyles={dateStyle}
               onChangeStyle={setDateStyle}
+              onChangeFormat={setSelectedItems}
             />
 
             {/* ------------ Select Time Style ------------ */}
-            {includeTime && (
+            {selectedItems.hour && (
               <TimeStyleComponent
                 timeStyle={timeStyle}
                 onStyleChange={setTimeStyle}
@@ -242,7 +325,12 @@ function App() {
             <div
               id="previewContainer"
               className="preview-container"
-              dangerouslySetInnerHTML={{ __html: codeString }}
+              dangerouslySetInnerHTML={{
+                __html:
+                  codeString && codeString !== ""
+                    ? codeString
+                    : defaultPreviewHtml,
+              }}
             ></div>
           </div>
           <div className="sub-section">

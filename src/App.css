@@ -1,4 +1,12 @@
 .page {
+  --ts-bg: #ffffff;
+  --ts-border: #d9dce3;
+  --ts-text: #1f2430;
+  --ts-muted: #6b7280;
+  --ts-accent: #2563eb;
+  --ts-accent-soft: #e8efff;
+  --ts-radius: 10px;
+
   width: 100vw;
   height: 100dvh;
   padding: 16px;
@@ -26,7 +34,6 @@
 .tabs {
   flex: 1;
   width: 100%;
-  max-width: 640px;
   padding: 20px;
   overflow: hidden;
   display: flex;
@@ -88,6 +95,11 @@
   justify-content: center;
   /* align-items: center; */
   gap: 12px;
+  flex-direction: column;
+}
+
+.small_note {
+  color: var(--ts-muted);
 }
 
 .date-label {
